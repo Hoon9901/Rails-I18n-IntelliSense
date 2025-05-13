@@ -1,0 +1,107 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# Rails I18n IntelliSense 커서룰
+
+## 개요
+이 문서는 Rails I18n IntelliSense 확장 프로그램의 코드 품질과 일관성을 유지하기 위한 규칙을 정의합니다.
+
+## 파일 패턴
+### 포함
+- `**/*.rb` - Ruby 파일
+- `**/*.erb` - ERB 템플릿 파일
+- `config/locales/**/*.yml` - 로케일 YAML 파일
+
+### 제외
+- `node_modules/**`
+- `out/**`
+- `.git/**`
+
+## 규칙
+
+### I18n 키 형식
+- **이름**: `i18n_key_format`
+- **설명**: I18n 키는 점(.)으로 구분된 소문자와 언더스코어(_)만 사용해야 합니다.
+- **패턴**: `^[a-z][a-z0-9_]*(\\.[a-z][a-z0-9_]*)*$`
+- **심각도**: warning
+- **예시**:
+  ```ruby
+  # 올바른 예
+  I18n.t("user.profile.first_name")
+  t("article.title")
+  
+  # 잘못된 예
+  I18n.t("User.Profile.FirstName")
+  t("article-Title")
+  ```
+
+### YAML 구조
+- **이름**: `yaml_structure`
+- **설명**: 로케일 YAML 파일은 최상위에 언어 코드를 키로 사용해야 합니다.
+- **패턴**: `^[a-z]{2}(-[A-Z]{2})?:`
+- **심각도**: error
+- **예시**:
+  ```yaml
+  # 올바른 예
+  ko:
+    user:
+      profile: "프로필"
+  
+  # 잘못된 예
+  user:
+    profile: "프로필"
+  ```
+
+### 번역 키 사용
+- **이름**: `translation_key_usage`
+- **설명**: I18n.t() 또는 t() 메서드 호출 시 문자열 리터럴을 사용해야 합니다.
+- **패턴**: `(I18n\\.t|t)\\(['\"][^'\"]+['\"]\\)`
+- **심각도**: warning
+- **예시**:
+  ```ruby
+  # 올바른 예
+  I18n.t("user.profile")
+  t("article.title")
+  
+  # 잘못된 예
+  I18n.t(key)
+  t(variable)
+  ```
+
+### 로케일 파일 명명
+- **이름**: `locale_file_naming`
+- **설명**: 로케일 파일은 {언어코드}.yml 형식으로 명명해야 합니다.
+- **패턴**: `^[a-z]{2}(-[A-Z]{2})?\\.yml$`
+- **심각도**: error
+- **예시**:
+  ```
+  # 올바른 예
+  ko.yml
+  en.yml
+  ja.yml
+  
+  # 잘못된 예
+  korean.yml
+  english.yml
+  ```
+
+### 번역 주석
+- **이름**: `translation_comment`
+- **설명**: 복잡한 번역 키에는 주석을 추가하는 것을 권장합니다.
+- **패턴**: `#\\s*@i18n\\s+[^\\n]+`
+- **심각도**: info
+- **예시**:
+  ```ruby
+  # @i18n 사용자 프로필 관련 번역
+  I18n.t("user.profile.first_name")
+  
+  # @i18n 게시글 상태 관련 번역
+  I18n.t("article.status.published")
+  ```
+
+## 심각도 수준
+- **error**: 반드시 수정해야 하는 문제
+- **warning**: 가능한 수정이 권장되는 문제
+- **info**: 참고사항
